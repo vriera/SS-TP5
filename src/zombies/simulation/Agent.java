@@ -14,6 +14,11 @@ public class Agent {
     public AgentType agentType;
     private final Double min_r;
     private final Double max_r;
+
+
+    public double getMaxR() {
+        return this.max_r;
+    }
     private boolean shrink_in_next_update = false;
     public double vision_r;
 

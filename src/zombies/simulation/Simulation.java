@@ -24,7 +24,21 @@ public class Simulation {
 
         System.out.println(Agent.delta_r);
 
-        for (int i = 0; i < 320; i++) {
+        for (int i = 0; i < 10; i++) {
+            double posX, posY;
+            do {
+                posX = (Math.random() - 0.5) * 1;
+                posY = (Math.random() - 0.5) * 1;
+            } while (Math.sqrt(posX*posX + posY*posY) >= 0.9);
+
+            //Agent zombie = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
+            Agent human = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.HUMAN , Config.H_V_DESIRED, 0 , Config.VISION_R);
+
+            agents.add(human);
+        }
+
+
+        for (int i = 0; i < 3; i++) {
             double posX, posY;
             do {
                 posX = (Math.random() - 0.5) * 1;
@@ -32,12 +46,14 @@ public class Simulation {
             } while (Math.sqrt(posX*posX + posY*posY) >= 0.9);
 
             Agent zombie = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
+          //  Agent human = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.HUMAN , Config.H_V_DESIRED, 0 , Config.VISION_R);
+
             Vector2D initial_vel = new Vector2D(1, 0).rotate(Math.random() * 2 * Math.PI);
             zombie.setDirection(initial_vel);
             agents.add(zombie);
         }
 
-
+       // Agent zombie = new Agent(new Vector2D(0 , 0 ), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
         Simulation.run();
     }
 
@@ -54,10 +70,10 @@ public class Simulation {
 
         while(step < totalSteps) {
             for (Agent agent : agents) {
-                if (agent.agentType == AgentType.ZOMBIE) {
-                    ArrayList<Agent> close = Simulation.getSurroundings(agent);
-                    velocities.add(agent.behave(close , Config.SPACE_RADIUS));
-                }
+
+                ArrayList<Agent> close = Simulation.getSurroundings(agent);
+                velocities.add(agent.behave(close , Config.SPACE_RADIUS));
+
             }
             for(int i = 0 ; i < agents.size() ; i++){
                 Agent a = agents.get(i);

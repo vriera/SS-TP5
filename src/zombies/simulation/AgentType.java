@@ -55,8 +55,7 @@ public enum AgentType implements Behaviour{
                        System.out.println("desired v: " + self.desired_v);
                        escape_vels = escape_vels.add(vel_dir);
                        escape_count++;
-                   }else{
-                       if (agent.vel_mag >= self.desired_v/2) zombie_nearby = true;
+                   } else {
                        humanRepel = humanRepel.add(getNC(self.pos.sub(agent.pos) , 500 , 0.02));
                    }
                }

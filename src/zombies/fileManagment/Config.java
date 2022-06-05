@@ -18,7 +18,7 @@ public class Config {
     public static int TOTAL_H;
     public static double H_V_DESIRED;
     //Agents
-    public static double VISION_R , MIN_R , MAX_R, TIME_TO_MAX_R;
+    public static double VISION_R , HUMAN_VISION_R , MIN_R , MAX_R, TIME_TO_MAX_R;
 
     private static final String config_path = "./config.json";
 
@@ -60,6 +60,7 @@ public class Config {
         MIN_R = root.getDouble("min_r");
         MAX_R = root.getDouble("max_r");
         TIME_TO_MAX_R = root.getDouble("time_to_max_r");
+        HUMAN_VISION_R = root.getDouble("human_vision_r");
     }
 
 

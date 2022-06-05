@@ -15,11 +15,13 @@ public class Agent {
     private final Double min_r;
     private final Double max_r;
 
+    public double stunTime = 0;
 
     public double getMaxR() {
         return this.max_r;
     }
     private boolean shrink_in_next_update = false;
+    private Double target_radius = null;
     public double vision_r;
 
 
@@ -44,6 +46,15 @@ public class Agent {
 
 
     public void update(Vector2D vel , double delta_t) {
+
+        if( this.stunTime > 0 ) {
+            this.reset_radius();
+            this.stunTime -= delta_t;
+            if(stunTime <= 0 ){
+                this.agentType = AgentType.ZOMBIE;
+            }
+            return;
+        }
         this.pos = this.pos.add(vel.mul(delta_t));
         this.updateRadius(shrink_in_next_update);
         this.updateMag();
@@ -61,6 +72,13 @@ public class Agent {
     }
 
     public void updateRadius(boolean reset) {
+        if(target_radius != null){
+            if(radius > target_radius) {
+                this.radius = target_radius;
+                this.target_radius = null;
+                return;
+            }
+        }
         if (reset) {
             this.radius = min_r;
             return;
@@ -69,6 +87,18 @@ public class Agent {
         if (this.radius > this.max_r) {
             this.radius = max_r;
         }
+    }
+
+
+    public void transform( Agent zombie){
+        this.agentType = AgentType.TRANSFORMING;
+        this.vision_r = zombie.vision_r;
+        this.desired_v = zombie.desired_v;
+        this.inactive_v = zombie.inactive_v;
+        this.stunTime = 7;
+        zombie.stunTime = 7;
+        this.reset_radius_in_next_update();
+        zombie.reset_radius_in_next_update();
     }
 
     public void reset_radius() {
@@ -81,6 +111,11 @@ public class Agent {
 
     public static void setDelta_r(double delta_r) {
         Agent.delta_r = delta_r;
+    }
+
+    public void setRfromV( double vel ){
+        this.target_radius = (vel/desired_v) * (max_r - min_r) + min_r;
+        System.out.println(String.format("target radious %f" , target_radius));
     }
 
 

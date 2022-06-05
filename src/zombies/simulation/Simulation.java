@@ -24,7 +24,7 @@ public class Simulation {
 
         System.out.println(Agent.delta_r);
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 320; i++) {
             double posX, posY;
             do {
                 posX = (Math.random() - 0.5) * 1;

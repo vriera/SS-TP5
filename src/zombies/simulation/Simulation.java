@@ -13,7 +13,7 @@ public class Simulation {
     static OutputManager out;
     public static void main(String[] args) {
         Config.readConfig();
-        out = new OutputManager("Test6");
+        out = new OutputManager(Config.NAME);
 
         agents = new ArrayList<>(1); //TODO: Agregar todos los agents
 
@@ -24,14 +24,14 @@ public class Simulation {
 
         System.out.println(Agent.delta_r);
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             double posX, posY;
             do {
                 posX = (Math.random() - 0.5) * 1;
                 posY = (Math.random() - 0.5) * 1;
-            } while (Math.sqrt((posX * posX) + (posY*posY)) > 1);
+            } while (Math.sqrt(posX*posX + posY*posY) >= 0.9);
 
-            Agent zombie = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE);
+            Agent zombie = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
             Vector2D initial_vel = new Vector2D(1, 0).rotate(Math.random() * 2 * Math.PI);
             zombie.setDirection(initial_vel);
             agents.add(zombie);
@@ -42,7 +42,7 @@ public class Simulation {
     }
 
     public static ArrayList<Agent> getSurroundings(Agent agent) {
-        return new ArrayList<>();
+        return agents;
     }
 
     public static void run() {

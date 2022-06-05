@@ -10,13 +10,15 @@ public class Agent {
     public Vector2D pos;
     public Vector2D direction;
     public double vel_mag;
-    public Double radius;
+    public double radius;
     public AgentType agentType;
     private final Double min_r;
     private final Double max_r;
     private boolean shrink_in_next_update = false;
+    public double vision_r;
 
-    public Agent(Vector2D pos, double radius, double min_r, double max_r, AgentType agentType , double desired_v, double inactive_v) {
+
+    public Agent(Vector2D pos, double radius, double min_r, double max_r, AgentType agentType , double desired_v, double inactive_v , double vision_r) {
         this.desired_v = desired_v;
         this.pos = new Vector2D(pos.x, pos.y);
         this.radius = radius;
@@ -26,10 +28,16 @@ public class Agent {
         this.direction = new Vector2D(0, 0);
         this.vel_mag = 0;
         this.inactive_v = inactive_v;
+        this.vision_r = vision_r;
     }
+
+
     public Vector2D behave(List<Agent> near , double space_radius){
         return agentType.behave(near, this , space_radius);
     }
+
+
+
     public void update(Vector2D vel , double delta_t) {
         this.pos = this.pos.add(vel.mul(delta_t));
         this.updateRadius(shrink_in_next_update);
@@ -50,6 +58,7 @@ public class Agent {
     public void updateRadius(boolean reset) {
         if (reset) {
             this.radius = min_r;
+            return;
         }
         this.radius += Agent.delta_r;
         if (this.radius > this.max_r) {

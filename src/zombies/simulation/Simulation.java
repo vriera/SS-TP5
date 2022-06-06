@@ -50,7 +50,8 @@ public class Simulation {
         System.out.println("Finished");
 
         Agent zombie = new Agent(new Vector2D(0 , 0 ), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
-       agents.add(zombie);
+        zombie.direction = new Vector2D(1, 0).rotate(Math.random() * 2 * Math.PI);
+        agents.add(zombie);
         // Agent zombie = new Agent(new Vector2D(0 , 0 ), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
         Simulation.run();
     }

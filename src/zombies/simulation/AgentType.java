@@ -137,6 +137,7 @@ public enum AgentType implements Behaviour{
                 turneable_human.transform(self);
             }
             if(escape_count == 0 && !human_in_sight){
+//                System.out.println("Llegue: " + self.direction.magnitude());
                 self.setRfromV(self.inactive_v);
                 return  self.direction.mul(self.radius * self.desired_v);
             }

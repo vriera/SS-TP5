@@ -12,11 +12,12 @@ int step = 0;
 
 
 void setup() {
+  frameRate(240);
   size(600, 600);
   background(0);
   ellipseMode(CENTER);
   scale_factor = (width/(2.0 * 11));
-  dynamic_data = loadJSONObject("../results/Sim9/dynamic.json");
+  dynamic_data = loadJSONObject("../results/PC_vz_50_4/dynamic.json");
   info = dynamic_data.getJSONArray("t");
   
 }
@@ -40,8 +41,10 @@ void draw() {
       noFill();
       //ellipse(x, y, 8 * scale_factor, 8 * scale_factor);
  
-      fill(255, 0, 0);
+      fill(#69CB15);
       
+    } else if (state == 2) {
+       fill(#FF5E00);
     } else {
       fill(0, 0, 255); 
     }
@@ -53,5 +56,7 @@ void draw() {
     //stroke(0, 255, 0);
     //line(x, y, x + vx*300, y + vy*300);
   }
-  step++;
+  
+  saveFrame("data/vel_50/######.png");
+  step += 2;
 }

@@ -12,3 +12,4 @@
 /.idea
 /visualization/data
 *.mp4
+/analytics/*.json

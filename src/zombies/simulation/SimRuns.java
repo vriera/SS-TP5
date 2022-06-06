@@ -16,6 +16,7 @@ public class SimRuns {
 
     private static void generateAgents( int n){
         Agent zombie = new Agent(new Vector2D(0 , 0 ), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
+        zombie.direction = new Vector2D(1, 0).rotate(Math.random() * 2 * Math.PI);
         agents.add(zombie);
         for (int i = 0; i < n; i++) {
             double posX, posY;
@@ -25,7 +26,6 @@ public class SimRuns {
                 do {
                     posX = (Math.random() - 0.5) * 2;
                     posY = (Math.random() - 0.5) * 2;
-                    System.out.println("X: " + posX + ", Y: " + posY);
                 } while (new Vector2D(posX, posY).magnitude() >= 1);
                 repited = false;
                 //Agent zombie = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
@@ -43,17 +43,21 @@ public class SimRuns {
 
     public static void main(String[] args) {
 
-        Integer[] nh = { 2, 10, 40, 80, 140, 200, 260, 320 , 400 ,500 };
+        Double[] vdzs = {1.0 , 1.5,  2.0, 2.5,  3.0, 3.5,  4.0 ,4.5 , 5.0};
         Config.readConfig();
         delta_t = Config.MIN_R / (2 * Config.H_V_DESIRED);
         Agent.setDelta_r((Config.MAX_R)/(Config.TIME_TO_MAX_R/delta_t));
         Agent.t_conversion = Config.T_CONVERSION;
-        for(int k=0 ; k < REPETITIONS ; k++){
-            for( Integer n : nh) {
-                out = new OutputManager(Config.NAME +"_nh_" + n + "_" + k );
+        for(int k=0 ; k <2 ; k++){
+
+            for( Double vzd : vdzs) {
+                int name = (int) (vzd *10);
+                System.out.println( "k=" + k +" n=" +  vzd );
+                Config.Z_V_DESIRED = vzd;
+                out = new OutputManager(Config.NAME +"_vz_" + name + "_" + k );
                 agents = new ArrayList<>(); //TODO: Agregar todos los agents
-                generateAgents(n);
-                Simulation.run();
+                generateAgents(Config.TOTAL_H);
+                run();
             }
         }
     }
@@ -69,12 +73,12 @@ public class SimRuns {
         int totalSteps = (int)Math.floor(Config.MAX_T / delta_t);
         System.out.println(delta_t);
         int zombies = 1;
-        while(step < totalSteps && zombies < Config.TOTAL_H + 1) {
+        while(step < totalSteps && zombies < (Config.TOTAL_H + 1)) {
             zombies= 0;
 
             for (Agent agent : agents) {
 
-                ArrayList<Agent> close = Simulation.getSurroundings(agent);
+                ArrayList<Agent> close = getSurroundings(agent);
                 velocities.add(agent.behave(close , Config.SPACE_RADIUS));
 
             }
@@ -90,7 +94,7 @@ public class SimRuns {
                     zombies++;
                 }
             }
-            System.out.println(zombies);
+
             out.saveT();
             velocities.clear(); //Es mejor porque tiene el mismo tamaño
             step++;

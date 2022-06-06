@@ -24,15 +24,18 @@ public enum AgentType implements Behaviour{
            //Check wall
            Vector2D wallRepel = new Vector2D(0,0);
            Vector2D n = new Vector2D(0,0);
-           if (self.pos.magnitude() >= (Config.SPACE_RADIUS - (2 *self.getMaxR()) ) ) {
+           if (true) {
+           //if (self.pos.magnitude() >= (Config.SPACE_RADIUS - (2) )) {
                //multiplicar dependiendo de la distancia
-               wallRepel = getNC(self.pos.mul(-1.0) , 2500 , 0.8);
+               wallRepel = getNC(self.pos.normalize().mul(space_radius).sub(self.pos).mul(-1.0) , 1000 , 0.5);
            }
 
            int escape_count = 0;
            Vector2D escape_vels = new Vector2D(0, 0);
            Vector2D humanRepel = new Vector2D(0,0);
            boolean zombie_nearby = false;
+           int chasing = 0;
+           int humans_near = 0;
            for (Agent agent : close) {
                double distance = self.pos.distance(agent.pos);
                if(agent == self || self.vision_r < distance){
@@ -42,21 +45,26 @@ public enum AgentType implements Behaviour{
                if(agent.agentType == ZOMBIE || agent.agentType == TRANSFORMING){
                    if (distance < (self.radius + agent.radius)) {
                        Vector2D vel_dir = self.pos.sub(agent.pos).normalize();
-                       System.out.println("desired v: " + self.desired_v);
+                       //System.out.println("desired v: " + self.desired_v);
                        escape_vels = escape_vels.add(vel_dir);
                        escape_count++;
-                       zombie_nearby = true;
                    } else {
-                       n = n.add(getNC(self.pos.sub(agent.pos), 2000, 0.08));
+                       chasing++;
+                       zombie_nearby = true;
+                       n = n.add(getNC(self.pos.sub(agent.pos), 2000, 0.5));
                    }
                } else {
                    if (distance < (self.radius + agent.radius)) {
-                       Vector2D vel_dir = self.pos.sub(agent.pos).normalize();
-                       System.out.println("desired v: " + self.desired_v);
-                       escape_vels = escape_vels.add(vel_dir);
-                       escape_count++;
-                   } else {
-                       humanRepel = humanRepel.add(getNC(self.pos.sub(agent.pos) , 500 , 0.02));
+                           Vector2D vel_dir = self.pos.sub(agent.pos).normalize();
+                           //System.out.println("desired v: " + self.desired_v);
+                           escape_vels = escape_vels.add(vel_dir);
+                           escape_count++;
+                       } else {
+                        if (agent.vel_mag >= 6*self.desired_v/7) {
+                            zombie_nearby = true;
+                        }
+                        humans_near++;
+                        humanRepel = humanRepel.add(getNC(self.pos.sub(agent.pos) , 200 , 0.5));
                    }
                }
            }
@@ -66,9 +74,12 @@ public enum AgentType implements Behaviour{
                self.reset_radius_in_next_update();
                return escape_vels.mul(self.desired_v);
            }
-
-           n = n.add(wallRepel); //--> n es mi direccion objetivo
+//           if(chasing > 0) {
+//               n = n.mul(1.0 / chasing);
+//           }
+           //--> n es mi direccion objetivo
            if (zombie_nearby) {
+               n = n.add(wallRepel);
                n = n.add(humanRepel);
            }
            if(n.magnitude() == 0){
@@ -84,13 +95,11 @@ public enum AgentType implements Behaviour{
         public Vector2D behave(List<Agent> close, Agent self, double space_radius){
 
             //Check wall
-            if (self.pos.magnitude() >= (Config.SPACE_RADIUS - self.radius)) {
+            if (self.pos.magnitude() >= (Config.SPACE_RADIUS - self.radius) ) {
                 self.reset_radius_in_next_update();
                 self.direction = new Vector2D(1 , 0).rotate(Math.random() * 2 *Math.PI);
                 return  self.pos.mul(-1.0).normalize().mul(self.desired_v);
-
             }
-
             //Check collision
             Vector2D escape_vels = new Vector2D(0, 0);
             Vector2D chase_vel = new Vector2D(0,0);
@@ -109,7 +118,7 @@ public enum AgentType implements Behaviour{
                 if (agent.agentType == AgentType.ZOMBIE || agent.agentType == AgentType.TRANSFORMING) {
                     if (distance < (self.radius + agent.radius)) { // Si colisionan
                         Vector2D vel_dir = self.pos.sub(agent.pos).normalize();
-                        System.out.println("desired v: " + self.desired_v);
+                        //System.out.println("desired v: " + self.desired_v);
                         escape_vels = escape_vels.add(vel_dir);
                         escape_count++;
                     }

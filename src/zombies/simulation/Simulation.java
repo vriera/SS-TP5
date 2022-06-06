@@ -26,16 +26,27 @@ public class Simulation {
 
         for (int i = 0; i < Config.TOTAL_H; i++) {
             double posX, posY;
+            Agent human;
+            boolean repited = false;
             do {
-                posX = (Math.random() - 0.5) * 1;
-                posY = (Math.random() - 0.5) * 1;
-            } while (Math.sqrt(posX*posX + posY*posY) >= 0.9);
-
-            //Agent zombie = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
-            Agent human = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.HUMAN , Config.H_V_DESIRED, 0 , Config.HUMAN_VISION_R);
-
+                do {
+                    posX = (Math.random() - 0.5) * 2;
+                    posY = (Math.random() - 0.5) * 2;
+                    System.out.println("X: " + posX + ", Y: " + posY);
+                } while (new Vector2D(posX, posY).magnitude() >= 0.9);
+                repited = false;
+                //Agent zombie = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
+                for (int j = 0; j < i && !repited; j++) {
+                    Agent other = agents.get(j);
+                    if (other.pos.distance(new Vector2D(posX * Config.SPACE_RADIUS, posY * Config.SPACE_RADIUS)) < (2*Config.MIN_R)) {
+                        repited = true;
+                    }
+                }
+                human = new Agent(new Vector2D(0 + posX * Config.SPACE_RADIUS, 0 + posY * Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.HUMAN, Config.H_V_DESIRED, 0, Config.HUMAN_VISION_R);
+            } while (repited);
             agents.add(human);
         }
+        System.out.println("Finished");
 
 //
 //        for (int i = 0; i < 1; i++) {

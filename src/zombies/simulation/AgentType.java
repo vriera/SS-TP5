@@ -60,11 +60,11 @@ public enum AgentType implements Behaviour{
                            escape_vels = escape_vels.add(vel_dir);
                            escape_count++;
                        } else {
-                        if (agent.vel_mag >= 6*self.desired_v/7) {
+                        if (agent.vel_mag >= 2.0*self.desired_v/7) {
                             zombie_nearby = true;
                         }
                         humans_near++;
-                        humanRepel = humanRepel.add(getNC(self.pos.sub(agent.pos) , 200 , 0.5));
+                        humanRepel = humanRepel.add(getNC(self.pos.sub(agent.pos) , 200 , 0.20));
                    }
                }
            }

@@ -6,26 +6,18 @@ import zombies.fileManagment.OutputManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Simulation {
+public class SimRuns {
 
     static ArrayList<Agent> agents;
     static double delta_t;
     static OutputManager out;
-    public static void main(String[] args) {
-        Config.readConfig();
-        Agent.t_conversion = Config.T_CONVERSION;
-        out = new OutputManager(Config.NAME);
-
-        agents = new ArrayList<>(1); //TODO: Agregar todos los agents
-
-        delta_t = Config.MIN_R / (2 * Config.H_V_DESIRED);
+    static int REPETITIONS = 15;
 
 
-        Agent.setDelta_r((Config.MAX_R)/(Config.TIME_TO_MAX_R/delta_t));
-
-        System.out.println(Agent.delta_r);
-
-        for (int i = 0; i < Config.TOTAL_H; i++) {
+    private static void generateAgents( int n){
+        Agent zombie = new Agent(new Vector2D(0 , 0 ), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
+        agents.add(zombie);
+        for (int i = 0; i < n; i++) {
             double posX, posY;
             Agent human;
             boolean repited = false;
@@ -34,12 +26,12 @@ public class Simulation {
                     posX = (Math.random() - 0.5) * 2;
                     posY = (Math.random() - 0.5) * 2;
                     System.out.println("X: " + posX + ", Y: " + posY);
-                } while (new Vector2D(posX, posY).magnitude() >= 0.9);
+                } while (new Vector2D(posX, posY).magnitude() >= 1);
                 repited = false;
                 //Agent zombie = new Agent(new Vector2D(0 + posX*Config.SPACE_RADIUS, 0 + posY*Config.SPACE_RADIUS), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
                 for (int j = 0; j < i && !repited; j++) {
                     Agent other = agents.get(j);
-                    if (other.pos.distance(new Vector2D(posX * Config.SPACE_RADIUS, posY * Config.SPACE_RADIUS)) < (2*Config.MIN_R)) {
+                    if (other.pos.distance(new Vector2D(posX * (Config.SPACE_RADIUS-1), posY * (Config.SPACE_RADIUS -1))) < (2*Config.MIN_R)) {
                         repited = true;
                     }
                 }
@@ -47,12 +39,23 @@ public class Simulation {
             } while (repited);
             agents.add(human);
         }
-        System.out.println("Finished");
+    }
 
-        Agent zombie = new Agent(new Vector2D(0 , 0 ), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
-       agents.add(zombie);
-        // Agent zombie = new Agent(new Vector2D(0 , 0 ), Config.MIN_R, Config.MIN_R, Config.MAX_R, AgentType.ZOMBIE , Config.Z_V_DESIRED, Config.Z_V_INACTIVE , Config.VISION_R);
-        Simulation.run();
+    public static void main(String[] args) {
+
+        Integer[] nh = { 2, 10, 40, 80, 140, 200, 260, 320 , 400 ,500 };
+        Config.readConfig();
+        delta_t = Config.MIN_R / (2 * Config.H_V_DESIRED);
+        Agent.setDelta_r((Config.MAX_R)/(Config.TIME_TO_MAX_R/delta_t));
+        Agent.t_conversion = Config.T_CONVERSION;
+        for(int k=0 ; k < REPETITIONS ; k++){
+            for( Integer n : nh) {
+                out = new OutputManager(Config.NAME +"_nh_" + n + "_" + k );
+                agents = new ArrayList<>(); //TODO: Agregar todos los agents
+                generateAgents(n);
+                Simulation.run();
+            }
+        }
     }
 
     public static ArrayList<Agent> getSurroundings(Agent agent) {

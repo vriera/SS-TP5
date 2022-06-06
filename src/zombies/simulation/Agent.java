@@ -4,6 +4,7 @@ import java.util.List;
 
 public class Agent {
     public static double delta_r = 0;
+    public static double t_conversion = 0;
     public double desired_v = 0;
     public double inactive_v = 0;
 
@@ -95,8 +96,8 @@ public class Agent {
         this.vision_r = zombie.vision_r;
         this.desired_v = zombie.desired_v;
         this.inactive_v = zombie.inactive_v;
-        this.stunTime = 7;
-        zombie.stunTime = 7;
+        this.stunTime = t_conversion;
+        zombie.stunTime = t_conversion;
         this.reset_radius_in_next_update();
         zombie.reset_radius_in_next_update();
     }
@@ -115,7 +116,6 @@ public class Agent {
 
     public void setRfromV( double vel ){
         this.target_radius = (vel/desired_v) * (max_r - min_r) + min_r;
-        System.out.println(String.format("target radious %f" , target_radius));
     }
 
 
